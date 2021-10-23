@@ -35,9 +35,17 @@ class Lamp {
       this.sensor[sensor.name] = { ...sensor };
     }
     this.component = { ...this.sensor };
-    this.serialPort = new SerialPort(serialPort, {
-      baudRate: 9600,
-    });
+    this.serialPort = new SerialPort(
+      serialPort,
+      {
+        baudRate: 9600,
+      },
+      e => {
+        if (e) {
+          console.error(`BT init problem for ${serialPort}`, e);
+        }
+      }
+    );
 
     this.serialPort.write(constants.BT_SEND_CURRENT_APP_STATE, err => {
       if (err) {
