@@ -4,7 +4,8 @@ const app = express();
 const port = 3000;
 
 const lamps = {
-  bedroom: new Lamp('/dev/rfcomm0'),
+  bedroom: new Lamp('/dev/rfcomm1'),
+  proto: new Lamp('/dev/rfcomm0'),
 };
 
 app.get('/lamp/:position/toggleLight', (req, res) => {
