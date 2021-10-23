@@ -9,12 +9,14 @@ const sPort = new SerialPort("/dev/rfcomm0", {
 });
 
 app.get('/', (req, res) => {
-	res.send('Hello World!')
 	sPort.write(constants.BT_TOGGLE_LIGHT, function (err) {
 		if (err) {
-			return console.log("Error", err.message);
+			res.send(err.message)
+			res.sendStatus(500)
+			return console.log("Error -> Toggle Light:", err.message);
 		}
-		console.log("success");
+		console.log("Toggle Light: success");
+		res.sendStatus(200);
 	});
 })
 
