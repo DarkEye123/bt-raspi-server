@@ -1,0 +1,12 @@
+{
+  "dependencies": {
+    "eslint": "^8.1.0",
+    "express": "^4.17.1",
+    "prettier": "^2.4.1",
+    "serialport": "^9.2.4"
+  },
+  "name": "bt-raspi-server",
+  "version": "1.0.0",
+  "main": "index.mjs",
+  "license": "MIT"
+}
