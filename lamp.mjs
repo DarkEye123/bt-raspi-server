@@ -43,6 +43,7 @@ class Lamp {
       e => {
         if (e) {
           console.error(`BT init problem for ${serialPort}`, e);
+          this.errorState = true;
         }
       }
     );
