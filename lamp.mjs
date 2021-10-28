@@ -54,18 +54,18 @@ class Lamp {
           this.errorState = true;
         }
       }
-      );
-    this.parser = this.serialPort.pipe(new SerialPort.parsers.Readline())
+    );
+    this.parser = this.serialPort.pipe(new SerialPort.parsers.Readline());
 
-    this._parseData = this._parseData.bind(this)
+    this._parseData = this._parseData.bind(this);
     this.synchronizeWithHW(null);
     this.parser.on("data", this._parseData);
   }
 
   _parseData(data) {
-    console.debug('received data', data)
+    console.debug("received data", data);
     if (this.errorState) {
-      console.info('ommiting received data, error state is active')
+      console.info("ommiting received data, error state is active");
       return;
     }
     if (this.currentOperation.flag === constants.BT_SEND_CURRENT_APP_STATE) {
@@ -78,10 +78,12 @@ class Lamp {
       let componentStates = {};
       for (const pair of parsedData) {
         const [name, value] = pair.split(":");
+        const state = !!Number(value);
         if (this.component[name]) {
-          const state = !!Number(value);
           this.component[name].state = state;
           componentStates[name] = state;
+        } else {
+          this[name] = state;
         }
       }
       if (this.currentOperation.cb) {
