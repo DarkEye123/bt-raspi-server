@@ -8,8 +8,8 @@ const app = express();
 const port = 3000;
 
 const lamps = {
-  bedroom: new Lamp("/dev/rfcomm1"),
-  proto: new Lamp("/dev/rfcomm0"),
+  bedroom: new Lamp("/dev/rfcomm1", 'bedroom'),
+  proto: new Lamp("/dev/rfcomm0", 'proto'),
   mock: testLamp,
 };
 
