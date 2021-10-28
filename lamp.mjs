@@ -1,10 +1,10 @@
-import SerialPort from 'serialport';
-import constants from './constants.mjs';
+import SerialPort from "serialport";
+import constants from "./constants.mjs";
 
 class Component {
-  constructor(name, onStateCMD, offStateCMD) {
+  constructor({ name, state, onStateCMD, offStateCMD }) {
     this.name = name;
-    this.state = false;
+    this.state = state;
     this.onStateCMD = onStateCMD;
     this.offStateCMD = offStateCMD;
   }
@@ -19,17 +19,25 @@ class Sensor extends Component {
 }
 
 const DEFAULT_SENSORS = [
-  new Sensor('sound', constants.BT_ENABLE_SOUND, constants.BT_DISABLE_SOUND),
-  new Sensor(
-    'infra_movement',
-    constants.BT_ENABLE_PIR,
-    constants.BT_DISABLE_PIR
-  ),
+  new Sensor({
+    name: "sound",
+    state: false,
+    onStateCMD: constants.BT_ENABLE_SOUND,
+    offStateCMD: constants.BT_DISABLE_SOUND,
+  }),
+  new Sensor({
+    name: "motion",
+    state: false,
+    onStateCMD: constants.BT_ENABLE_PIR,
+    offStateCMD: constants.BT_DISABLE_PIR,
+  }),
 ];
 class Lamp {
   constructor(serialPort, id, state = false, sensors = DEFAULT_SENSORS) {
     this.id = id;
     this.state = state;
+    this.currentOperation = null;
+    this.ignoreSensors = false;
     this.sensor = {};
     for (const sensor of sensors) {
       this.sensor[sensor.name] = { ...sensor };
@@ -40,7 +48,7 @@ class Lamp {
       {
         baudRate: 9600,
       },
-      e => {
+      (e) => {
         if (e) {
           console.error(`BT init problem for ${serialPort}`, e);
           this.errorState = true;
@@ -48,10 +56,47 @@ class Lamp {
       }
     );
 
-    this.serialPort.write(constants.BT_SEND_CURRENT_APP_STATE, err => {
+    this.synchronizeWithHW(null);
+
+    this.serialPort.on("data", this._parseData);
+  }
+
+  _parseData(data) {
+    if (this.currentOperation.flag === constants.BT_SEND_CURRENT_APP_STATE) {
+      console.assert(
+        typeof this.currentOperation.cb !== "undefined",
+        "callback needs to be defined"
+      );
+      const parsedData = data.split(";");
+      parsedData.pop(); // remove empty string at the end
+      let componentStates = {};
+      for (const pair of parsedData) {
+        const [name, value] = pair.split(":");
+        const state = !!Number(value);
+        this.component[name].state = state;
+        componentStates[name] = state;
+      }
+      if (this.currentOperation.cb) {
+        this.currentOperation.cb(
+          {
+            state: this.state,
+            ignoring_sensors: this.ignoreSensors,
+            ...componentStates,
+          },
+          null
+        );
+      }
+    }
+    this.currentOperation = null;
+  }
+
+  synchronizeWithHW(cb) {
+    this.serialPort.write(constants.BT_SEND_CURRENT_APP_STATE, (err) => {
       if (err) {
         console.error("Couldn't update lamp state", err);
+        return;
       }
+      this.currentOperation = { flag: constants.BT_SEND_CURRENT_APP_STATE, cb };
     });
   }
 
@@ -67,10 +112,10 @@ class Lamp {
     });
   }
 
-  _turn(operation = 'on', componentName, cb) {
-    const stateKey = operation === 'on' ? 'onStateCMD' : 'offStateCMD';
+  _turn(operation = "on", componentName, cb) {
+    const stateKey = operation === "on" ? "onStateCMD" : "offStateCMD";
     if (this.component[componentName]) {
-      this._writeBT(this.component[componentName][stateKey], err => {
+      this._writeBT(this.component[componentName][stateKey], (err) => {
         if (cb) {
           cb(err);
         }
@@ -84,14 +129,14 @@ class Lamp {
       });
     } else {
       if (cb) {
-        cb('not registered');
+        cb("not registered");
       }
       console.error(`Component ${componentName} is not registered!`);
     }
   }
 
   toggleLight(cb) {
-    this._writeBT(constants.BT_TOGGLE_LIGHT, err => {
+    this._writeBT(constants.BT_TOGGLE_LIGHT, (err) => {
       if (cb) {
         cb(err);
       }
@@ -102,12 +147,12 @@ class Lamp {
     });
   }
 
-  turnOff(componentName, cb) {
-    return this._turn('off', componentName, cb);
+  turnOff(cb, componentName) {
+    return this._turn("off", componentName, cb);
   }
 
-  turnOn(componentName, cb) {
-    return this._turn('on', componentName, cb);
+  turnOn(cb, componentName) {
+    return this._turn("on", componentName, cb);
   }
 }
 
