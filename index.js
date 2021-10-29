@@ -1,15 +1,29 @@
 import express from "express";
 
+import fs from "fs";
+const dir = "./build";
+const app = express();
+const port = process.env.PORT || 3000;
+
+if (fs.existsSync(dir)) {
+  console.info("Frontend 'build' directory exists!");
+  const FEApp = await import("./build/middlewares.js");
+  app.use(
+    FEApp.assetsMiddleware,
+    FEApp.prerenderedMiddleware,
+    FEApp.kitMiddleware
+  );
+} else {
+  console.warn("Frontend 'build' directory not found!");
+}
+
 import Lamp from "./lamp.mjs";
 import testLamp from "./mocks/lamp.mjs";
 import endpoints from "./endpoints.mjs";
 
-const app = express();
-const port = 3000;
-
 const lamps = {
-  bedroom: new Lamp("/dev/rfcomm1", 'bedroom'),
-  proto: new Lamp("/dev/rfcomm0", 'proto'),
+  bedroom: new Lamp("/dev/rfcomm1", "bedroom"),
+  proto: new Lamp("/dev/rfcomm0", "proto"),
   mock: testLamp,
 };
 

@@ -7,8 +7,9 @@
     "serialport": "^9.2.4"
   },
   "scripts": {
-    "dev": "nodemon index.mjs"
+    "dev": "nodemon index.js"
   },
+  "type": "module",
   "name": "bt-raspi-server",
   "version": "1.0.0",
   "main": "index.mjs",
