@@ -1,10 +1,11 @@
+const prefix = '/api';
 const endpoints = {
-  toggleLight: "/lamp/:position/toggle-light",
-  enableMotionSensor: "/lamp/:position/enable-motion-sensor",
-  disableMotionSensor: "/lamp/:position/disable-motion-sensor",
-  enableSoundSensor: "/lamp/:position/enable-sound-sensor",
-  disableSoundSensor: "/lamp/:position/disable-sound-sensor",
-  synchronize: "/lamp/:position/synchronize",
+  toggleLight: `${prefix}/lamp/:position/toggle-light`,
+  enableMotionSensor: `${prefix}/lamp/:position/enable-motion-sensor`,
+  disableMotionSensor: `${prefix}/lamp/:position/disable-motion-sensor`,
+  enableSoundSensor: `${prefix}/lamp/:position/enable-sound-sensor`,
+  disableSoundSensor: `${prefix}/lamp/:position/disable-sound-sensor`,
+  synchronize: `${prefix}/lamp/:position/synchronize`,
 };
 
 export default endpoints;
