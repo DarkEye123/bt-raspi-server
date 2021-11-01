@@ -85,7 +85,11 @@ class Lamp {
       parsedData.pop(); // remove empty string at the end
       let componentStates = {};
       for (const pair of parsedData) {
-        const [name, value] = pair.split(":");
+        let [name, value] = pair.split(":");
+        // ensure compatibility with older arduino code
+        if (name === "ignoreSensors") {
+          name = "sensor_blocker";
+        }
         const state = !!Number(value);
         if (this.component[name]) {
           this.component[name].state = state;
