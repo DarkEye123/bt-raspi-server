@@ -23,7 +23,7 @@ const mockLamp = {
   synchronizeWithHW: (cb) => {
     console.log("syncing");
     cb(
-      { motion: true, sound: false, ignoring_sensors: false, state: false },
+      { motion: true, sound: false, sensor_blocker: false, state: false },
       USE_NEGATIVE_RESPONSES ? error : undefined
     );
   },

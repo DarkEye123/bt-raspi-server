@@ -32,17 +32,25 @@ const DEFAULT_SENSORS = [
     offStateCMD: constants.BT_DISABLE_PIR,
   }),
 ];
+
+class SensorBlocker extends Component {}
+
 class Lamp {
   constructor(serialPort, id, state = false, sensors = DEFAULT_SENSORS) {
     this.id = id;
     this.state = state;
     this.currentOperation = null;
-    this.ignoreSensors = false;
     this.sensor = {};
     for (const sensor of sensors) {
       this.sensor[sensor.name] = { ...sensor };
     }
     this.component = { ...this.sensor };
+    this.component["sensor_blocker"] = new SensorBlocker({
+      name: "sensor_blocker",
+      state: false,
+      onStateCMD: constants.BT_ENABLE_SENSORS,
+      offStateCMD: constants.BT_DISABLE_SENSORS,
+    });
     this.serialPort = new SerialPort(
       serialPort,
       {
@@ -90,7 +98,6 @@ class Lamp {
         this.currentOperation.cb(
           {
             state: this.state,
-            ignoring_sensors: this.ignoreSensors,
             ...componentStates,
           },
           null
