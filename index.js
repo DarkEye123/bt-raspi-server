@@ -5,7 +5,9 @@ import fs from "fs";
 const dir = "./build";
 const app = express();
 const port = process.env.PORT || 3000;
-app.use(cors({ origin: "http://localhost:4000" }));
+app.use(
+  cors({ origin: ["http://localhost:4000", "http://192.168.0.233:3000"] })
+);
 
 import Lamp from "./lamp.mjs";
 import testLamp from "./mocks/lamp.mjs";
