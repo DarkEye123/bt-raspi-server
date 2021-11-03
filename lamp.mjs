@@ -48,8 +48,8 @@ class Lamp {
     this.component["sensor_blocker"] = new SensorBlocker({
       name: "sensor_blocker",
       state: false,
-      onStateCMD: constants.BT_ENABLE_SENSORS,
-      offStateCMD: constants.BT_DISABLE_SENSORS,
+      onStateCMD: constants.BT_DISABLE_SENSORS,
+      offStateCMD: constants.BT_ENABLE_SENSORS,
     });
     this.serialPort = new SerialPort(
       serialPort,
@@ -76,7 +76,7 @@ class Lamp {
       console.info("ommiting received data, error state is active");
       return;
     }
-    if (this.currentOperation.flag === constants.BT_SEND_CURRENT_APP_STATE) {
+    if (this.currentOperation?.flag === constants.BT_SEND_CURRENT_APP_STATE) {
       console.assert(
         typeof this.currentOperation.cb !== "undefined",
         "callback needs to be defined"
