@@ -27,6 +27,7 @@ const mockLamp = {
       USE_NEGATIVE_RESPONSES ? error : undefined
     );
   },
+  closeConnection() {},
 };
 
 export default mockLamp;

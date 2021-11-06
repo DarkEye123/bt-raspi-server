@@ -8,6 +8,7 @@ const endpoints = {
   enableSensorBlocker: `${prefix}/lamp/:position/enable-all-sensors`,
   disableSensorBlocker: `${prefix}/lamp/:position/disable-all-sensors`,
   synchronize: `${prefix}/lamp/:position/synchronize`,
+  reconnectAll: `${prefix}/reconnect-all`,
 };
 
 export default endpoints;

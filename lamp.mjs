@@ -70,6 +70,12 @@ class Lamp {
     this.parser.on("data", this._parseData);
   }
 
+  closeConnection() {
+    if (this.serialPort.isOpen) {
+      this.serialPort.close();
+    }
+  }
+
   _parseData(data) {
     console.debug("received data", data);
     if (this.errorState) {

@@ -13,11 +13,15 @@ import Lamp from "./lamp.mjs";
 import testLamp from "./mocks/lamp.mjs";
 import endpoints from "./endpoints.mjs";
 
-const lamps = {
-  bedroom: new Lamp("/dev/rfcomm1", "bedroom"),
-  proto: new Lamp("/dev/rfcomm0", "proto"),
-  mock: testLamp,
-};
+function initLamps() {
+  return {
+    bedroom: new Lamp("/dev/rfcomm1", "bedroom"),
+    proto: new Lamp("/dev/rfcomm0", "proto"),
+    mock: testLamp,
+  };
+}
+
+let lamps = initLamps();
 
 function _executeCMD(res, lamp, cmd, ...parameters) {
   if (lamp && !lamp.errorState) {
@@ -81,6 +85,14 @@ app.get(endpoints.synchronize, (req, res) => {
   } else {
     res.sendStatus(422);
   }
+});
+
+app.get(endpoints.reconnectAll, (req, res) => {
+  Object.values(lamps).forEach(
+    (lamp) => lamp.closeConnection()
+  );
+  lamps = initLamps();
+  res.sendStatus(200);
 });
 
 if (fs.existsSync(dir)) {
